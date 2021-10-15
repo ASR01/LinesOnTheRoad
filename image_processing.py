@@ -154,8 +154,8 @@ def process_img(img, type):
     angle = 20*(np.pi/180) #(Tangent in degrees)
 
 
-    up_left = [col* 0.35, row * 0.30]
-    up_right = [col* 0.65, row * 0.3]
+    up_left = [col* 0.35, row * 0.50]
+    up_right = [col* 0.65, row * 0.5]
     bottom_left = [col * 0, row * 1]
     bottom_right = [col* 1,row * 1]
     corners = np.array([up_left, up_right, bottom_right, bottom_left], dtype = 'int32')

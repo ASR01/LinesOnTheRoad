@@ -7,7 +7,7 @@ type = 1 # 0 for test
 
 
 
-cap = cv2.VideoCapture('./test_videos/solidWhiteRight.mp4')
+cap = cv2.VideoCapture('./test_videos/solidYellowLeft.mp4')
 #window_name = ('Face Recognition')
 #cv2.namedWindow(window_name)
 
@@ -22,9 +22,10 @@ while True:
 
     cv2.imshow('Frame', frame)
        
-    key = cv2.waitKey(200)
+    key = cv2.waitKey(20)
     print(key)
 
 cap.release()
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
