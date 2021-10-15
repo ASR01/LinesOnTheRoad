@@ -91,18 +91,21 @@ def checking_lines(lines, angle):
 
 def unifying_lines(lin):
        
-    lines    = [] # (slope, intercept)
-    weights  = [] # (length,)
+    tangent = []
+    constant = []
+    weights  = [] 
     
     for i in range(len(lin)):
         print(i, lin[i])
         for x0, y0, x1, y1 in lin[i]:
             if x1 !=x0:
-                tangent = (y1-y0)/(x1-x0)
+                tan = (y1-y0)/(x1-x0)
                 b = y1 - tangent*x1
                 length = np.sqrt((y1-y0)**2+(x1-x0)**2)
-                lines.append((tangent, b))
-                weights.append((length))
+                tangent.appen(tan)
+                constant.append(b)
+                length.append(length)
+                
     
     # add more weight to longer lines
     if len(weights) > 0:
