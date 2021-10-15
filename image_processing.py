@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-img = cv2.imread('./test_images/solidWhiteRight.jpg')
-img_show = img[:,:,::-1]
+#img = cv2.imread('./test_images/solidWhiteCurve.jpg')
 #print(img.shape)
 # To do's
 
@@ -146,6 +145,9 @@ def write_lines(img, left, right):
 
 def process_img(img, type):
     
+    
+    img_show = img[:,:,::-1]
+
     # Cropping Params
     row = img.shape[0]
     col = img.shape[1]
@@ -208,8 +210,8 @@ def process_img(img, type):
         plt.imshow(lines_refined, cmap = 'gray')
         plt.show()
 
+    return lines_refined
 
 
-
-process_img(img, 0)
+#process_img(img, 1)
 
