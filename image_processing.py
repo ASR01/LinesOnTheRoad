@@ -91,33 +91,58 @@ def checking_lines(lines, angle):
 
 def unifying_lines(lin):
        
-    tangent = []
-    constant = []
-    weights  = [] 
+    tan = []
+    con = []
+    long  = [] 
     
     for i in range(len(lin)):
         print(i, lin[i])
-        for x0, y0, x1, y1 in lin[i]:
-            if x1 !=x0:
-                tan = (y1-y0)/(x1-x0)
-                b = y1 - tangent*x1
-                length = np.sqrt((y1-y0)**2+(x1-x0)**2)
-                tangent.appen(tan)
-                constant.append(b)
-                length.append(length)
+        x0, y0, x1, y1  = lin[i]
+        if x1 !=x0:
+            tangent = (y1-y0)/(x1-x0)
+            b = y1 - tangent*x1
+            length = np.sqrt((y1-y0)**2+(x1-x0)**2)
+            if length > 20:
+                tan.append(tangent)
+                con.append(b)
+                long.append(length)
                 
     
     # add more weight to longer lines
-    if len(weights) > 0:
-        lane  = np.dot(weights,lines ) /np.sum(weights)  if len(weights) >0 else None
+    if len(tan) > 0:
+        final_tangent= sum(np.array(long) * np.array(tan)) /np.sum(long) 
+        final_b = sum(np.array(long) * np.array(con)) /np.sum(long)
     else:
         lane = None
-    return lane
+    return final_tangent, final_b
     
 
-def write_lines():
-    pass
+def write_lines(img, left, right):
+    
+    height = img.shape[0]
+    #left points
+    left_y0 = int(height)
+    left_y1 = int(round((height * 0.7),0))
+    left_x0 = round((left_y0 - left[1])/left[0])
+    left_x1 = round((left_y1 - left[1])/left[0])
 
+    #right points
+    right_y0 = int(height)
+    right_y1 = int(round((height * 0.7),0))
+    right_x0 = round(int(right_y0 - right[1])/right[0])
+    right_x1 = round(int(right_y1 - right[1])/right[0])
+
+    
+    blank = np.zeros_like(img)
+    print(left_x0,left_y0,left_x1,left_y1, '\n')
+    print(right_x0,right_y0,right_x1,right_y1, '\n')
+       
+    cv2.line(blank, (left_x0,left_y0), (left_x1,left_y1),  (255,0,0), 15)
+    cv2.line(blank, (right_x0,right_y0), (right_x1,right_y1),  (255,0,0), 15)
+    
+    return cv2.addWeighted(img, 0.9, blank, 0.95, 0.0)
+    
+        
 
 def process_img(img, type):
     
@@ -140,18 +165,19 @@ def process_img(img, type):
     high = 150
 
     #Img_processing
-
     filtered = filter_colours(img)
     blurred = blurring(filtered, blur_kernel)
     edged = edging(blurred, low, high)
     detection_ROI = define_ROI(edged, corners)
+
+    # detect the lines, returns the image and the left and right oriented lines
     lines_detected, rl, ll = detect_lines(detection_ROI, angle)
     #group the lines
-    #print('right lines:',rl)
-    #print(rl[0])
-    #right = unifying_lines(rl)
-    #left = unifying_lines(ll)
-    #print(left, right)
+    right = unifying_lines(rl)
+    left = unifying_lines(ll)
+    print(left, right)
+    lines_refined = write_lines(img_show, left, right)
+
 
 
 
@@ -160,26 +186,28 @@ def process_img(img, type):
     # display for test
     if type == 0:
         fig = plt.figure(figsize = (15,10))
-        fig.add_subplot(2,3,1)
+        fig.add_subplot(3,3,1)
         plt.imshow(img_show)
-        fig.add_subplot(2,3,2)
+        fig.add_subplot(3,3,2)
         plt.title('Color Filter')
         plt.imshow(filtered)
-        fig.add_subplot(2,3,3)
+        fig.add_subplot(3,3,3)
         plt.title('Blurred')
         plt.imshow(blurred, cmap = 'gray')
-        fig.add_subplot(2,3,4)
+        fig.add_subplot(3,3,4)
         plt.title('Edge')
         plt.imshow(edged, cmap = 'gray')
-        fig.add_subplot(2,3,5)
+        fig.add_subplot(3,3,5)
         plt.title('Region of Interest')
         plt.imshow(detection_ROI, cmap = 'gray')
-        fig.add_subplot(2,3,6)
+        fig.add_subplot(3,3,6)
         plt.title('Lines')
         plt.imshow(lines_detected)
+        fig.add_subplot(3,3,7)
+        plt.title('Lines refined')
+        plt.imshow(lines_refined, cmap = 'gray')
         plt.show()
 
-    lines = checking_lines(lines, angle)
 
 
 
